@@ -1,0 +1,140 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Об авторе{% endblock %}
+{% block content %}
+
+
+<div class="page-header">
+  <h1><span style="color:red">Ya</span>uheni <span style="color:red">Li</span>akh</h1>
+</div>
+<div class="divContent container">
+  <div class="row">
+    <h2 class="lead">Junior Python Developer</h2>
+    <div class="col-sm-3">
+      <blockquote>
+        <i>Belarus, Minsk</i>
+        <footer>31 years old</footer>
+      </blockquote>
+      <div class="row text-center">
+        <img src="{% static 'img/fav/avatar.jpg' %}" alt="boy" width="150px" class="img-responsive img-circle img-thumbnail">
+      </div>
+      <div class="row text-center">
+        <h3>Coming soon</h3>
+      </div>
+
+    </div>
+    <div class="col-sm-9">
+      <div class="jumbotron">
+        <h2> {__Hello__!}</h2>
+          Communication:
+        <ul>
+        <div class="col-sm-3">
+          <li>
+            <a href="https://t.me/xtm77">
+              <button class="btn-primary">
+                Telegram
+              </button>
+            </a>
+          </li>
+        </div>
+        <div class="col-sm-3">
+          <li>
+            <a href="https://github.com/xtmmes">
+              <button class="btn-primary">
+                GitHub
+              </button>
+            </a>
+          </li>
+        </div>
+        <div class="col-sm-3">
+          <li>
+            xtm791@gmail.com
+          </li>
+        </div>
+        </ul>
+        <hr>
+        <ul>
+          <h2>
+            Skills and Proficiency:
+          </h2>
+          <hr>
+          <li>
+            HTML5, CSS
+          </li>
+          <li>
+            Python
+          </li>
+          <li>
+            Django
+          </li>
+          <li>
+            SQL
+          </li>
+          <li>
+            Git
+          </li>
+          <li>
+            VSCode, Pycharm
+          </li>
+          <li>
+            Autocad
+          </li>
+        </ul>
+        <ul>
+          <b>
+            <h3>
+              Education
+            </h3>
+          </b>
+          <li>Minsk State College of Architecture and Civil Engineering  (Construction technician)</li>
+          <li>Polotsk State University (Сivil engineer)    </li>
+        </ul>
+        <hr>
+        <ul>
+          <b><h3>Courses</h3></b>
+          <li><span style="color:red">Ya</span>ndex Praktikum 2022 </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="row">
+  <h2 id="skill" class="lead">
+    <i>"I'm Going To Build My Own Theme Park!
+            With Blackjack! And Hookers!  (c) Bender Futurama
+    </i>
+  </h2>
+  <p>
+    <span class="label label-success">Python</span>
+  </p>
+  <div class="progress">
+    <div class="progress-bar progress-bar-success progress-bar-striped active" style="width: 35%;">
+      <span>Python</span>
+    </div>
+  </div>
+  <p>
+  <span class="label label-success">Django</span>
+  </p>
+  <div class="progress">
+    <div class="progress-bar progress-bar-danger progress-bar-striped active" style="width: 45%;">
+      <span>Django</span>
+    </div>
+  </div>
+  <p>
+  <span class="label label-info">html/css</span>
+  </p>
+  <div class="progress">
+    <div class="progress-bar progress-bar-info progress-bar-striped active" style="width: 66%;">
+      <span>Git</span>
+    </div>
+  </div>
+  <p>
+    <span class="label label-warning">SQL</span>
+  </p>
+  <div class="progress">
+    <div class="progress-bar progress-bar-warning progress-bar-striped active" style="width: 27%;">
+      <span>SQL</span>
+    </div>
+  </div>
+</div>
+{% endblock %}
