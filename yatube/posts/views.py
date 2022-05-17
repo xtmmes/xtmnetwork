@@ -1,15 +1,15 @@
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, redirect, render
 
-from .forms import PostForm, CommentForm
-from .models import Group, Post, User, Comment, Follow
-from .utils import paginator
+from .forms import CommentForm, PostForm
+from .models import Comment, Follow, Group, Post, User
+from .utils import get_paginator
 
 
 def index(request):
     post_list = Post.objects.select_related('author', 'group')
     context = {
-        'page_obj': paginator(request, post_list),
+        'page_obj': get_paginator(post_list, request),
     }
     return render(request, 'posts/index.html', context)
 
@@ -19,7 +19,7 @@ def group_posts(request, slug):
     post_list = group.posts.select_related('author')
     context = {
         'group': group,
-        'page_obj': paginator(request, post_list),
+        'page_obj': get_paginator(post_list, request),
         'title': group.title,
     }
     return render(request, 'posts/group_list.html', context)
@@ -28,7 +28,7 @@ def group_posts(request, slug):
 def profile(request, username):
     author = get_object_or_404(User, username=username)
     post_list = author.posts.select_related('group')
-    paginator(request, post_list)
+    get_paginator(post_list, request)
     posts_amount = author.posts.count()
     following = (
         request.user.is_authenticated
@@ -36,7 +36,7 @@ def profile(request, username):
             user__username=request.user, author__username=username).exists())
     context = {
         'author': author,
-        'page_obj': paginator(request, post_list),
+        'page_obj': get_paginator(post_list, request),
         'following': following,
         'posts_amount': posts_amount
     }
