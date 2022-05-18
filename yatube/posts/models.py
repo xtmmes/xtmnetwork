@@ -92,7 +92,7 @@ class Comment(models.Model):
     )
 
     class Meta:
-        ordering = ['-created']
+        ordering = ('-created',)
         verbose_name = 'Комментарий'
         verbose_name_plural = 'Комментарии'
 
@@ -102,10 +102,16 @@ class Comment(models.Model):
 
 class Follow(models.Model):
     """Подписка на авторов."""
-    user = models.ForeignKey(User, on_delete=models.CASCADE,
-                             related_name='follower')
-    author = models.ForeignKey(User, on_delete=models.CASCADE,
-                               related_name='following')
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='follower'
+    )
+    author = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='following'
+    )
 
     class Meta:
         constraints = [
@@ -114,5 +120,5 @@ class Follow(models.Model):
                 name='unique_follower')
         ]
 
-    def str(self):
-        return f"{self.author}, follower:{self.user}"
+    def __str__(self):
+        return f'{self.author}, follower:{self.user}'

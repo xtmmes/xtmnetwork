@@ -28,8 +28,6 @@ def group_posts(request, slug):
 def profile(request, username):
     author = get_object_or_404(User, username=username)
     post_list = author.posts.select_related('group')
-    get_paginator(post_list, request)
-    posts_amount = author.posts.count()
     following = (
         request.user.is_authenticated
         and Follow.objects.filter(
@@ -38,7 +36,6 @@ def profile(request, username):
         'author': author,
         'page_obj': get_paginator(post_list, request),
         'following': following,
-        'posts_amount': posts_amount
     }
     return render(request, 'posts/profile.html', context)
 
@@ -46,13 +43,11 @@ def profile(request, username):
 def post_detail(request, post_id):
     post = get_object_or_404(Post, id=post_id)
     author_posts = post.author.posts.count()
-    num_author_posts = Post.objects.filter(author=author_posts).count()
-    comment_form = CommentForm(request.POST or None)
+    comment_form = CommentForm()
     comments = Comment.objects.select_related('post', 'author')
     context = {
         'post': post,
         'author_posts': author_posts,
-        'posts_count': num_author_posts,
         'form': comment_form,
         'comments': comments,
     }
@@ -61,9 +56,10 @@ def post_detail(request, post_id):
 
 @login_required
 def post_create(request):
-    form = PostForm(request.POST or None,
-                    files=request.FILES or None,
-                    )
+    form = PostForm(
+        request.POST or None,
+        files=request.FILES or None,
+    )
     if not form.is_valid():
         return render(request, 'posts/post_create.html', {'form': form})
     post = form.save(commit=False)
@@ -103,14 +99,12 @@ def add_comment(request, post_id):
 @login_required
 def follow_index(request):
     """Посты авторов,на которых подписан текущий пользователь, не более 10"""
-    user = request.user
-    posts = Post.objects.filter(author__following__user=user)
+    posts = Post.objects.filter(author__following__user=User)
     page_obj = get_paginator(posts, request)
-    template = 'posts/follow.html'
     context = {
         'page_obj': page_obj,
     }
-    return render(request, template, context)
+    return render(request, 'posts/follow.html', context)
 
 
 @login_required
@@ -124,6 +118,5 @@ def profile_follow(request, username):
 @login_required
 def profile_unfollow(request, username):
     """Функция отписаться от некого автора"""
-    author = get_object_or_404(User, username=username)
-    Follow.objects.filter(user=request.user, author=author).delete()
+    Follow.objects.filter(user=request.user, author__username=username).delete()
     return redirect('posts:profile', username)
