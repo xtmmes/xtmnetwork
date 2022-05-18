@@ -121,9 +121,5 @@ def profile_follow(request, username):
 @login_required
 def profile_unfollow(request, username):
     """Функция отписаться от некого автора"""
-    author = get_object_or_404(
-        User,
-        username=username
-    )
-    Follow.objects.filter(user=request.user, author=author).delete()
+    Follow.objects.filter(user=request.user, author__username=username).delete()
     return redirect('posts:profile', username)
