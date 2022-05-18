@@ -99,7 +99,7 @@ def add_comment(request, post_id):
 @login_required
 def follow_index(request):
     """Посты авторов,на которых подписан текущий пользователь, не более 10"""
-    posts = Post.objects.filter(author__following__user=User)
+    posts = Post.objects.filter(author__following__user=request.user)
     page_obj = get_paginator(posts, request)
     context = {
         'page_obj': page_obj,
