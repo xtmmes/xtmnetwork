@@ -114,18 +114,16 @@ def profile_follow(request, username):
         username=username
     )
     if request.user != author:
-        Follow.objects.get_or_create(
-            user=request.user,
-            author=author
-        )
+        Follow.objects.get_or_create(user=request.user, author=author)
     return redirect("posts:profile", username=username)
 
 
 @login_required
 def profile_unfollow(request, username):
     """Функция отписаться от некого автора"""
-    Follow.objects.filter(
-        user=request.user,
-        author__username=username
-    ).delete()
+    author = get_object_or_404(
+        User,
+        username=username
+    )
+    Follow.objects.filter(user=request.user, author=author).delete()
     return redirect('posts:profile', username)
