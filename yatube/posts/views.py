@@ -129,4 +129,3 @@ def profile_unfollow(request, username):
         author__username=username
     ).delete()
     return redirect('posts:profile', username)
-
