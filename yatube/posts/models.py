@@ -120,5 +120,5 @@ class Follow(models.Model):
                 name='unique_follower')
         ]
 
-    def __str__(self):
+    def str(self):
         return f'{self.author}, follower:{self.user}'
