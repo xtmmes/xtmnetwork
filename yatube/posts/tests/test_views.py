@@ -270,4 +270,3 @@ class FollowTest(TestCase):
         self.assertEqual(posts_count + 1, follower_new_post_count)
         self.assertEqual(posts_count - 1, non_follower_post_count)
         self.assertEqual(non_follower_post_count, non_follower_new_post_count)
-
