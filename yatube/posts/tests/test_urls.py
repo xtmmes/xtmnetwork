@@ -50,24 +50,18 @@ class StaticURLTests(TestCase):
                 self.assertEqual(response.status_code, HTTPStatus.OK)
 
     def test_task_list_url_exists_at_desired_location(self):
-        """Страница /create/ доступна автору."""
-        response = self.authorized_client.get(self.url_names[0])
-        self.assertEqual(response.status_code, HTTPStatus.OK)
+        """URL-адрес доступен"""
+        for address in self.url_names[:2]:
+            with self.subTest(address=address):
+                response = self.authorized_client.get(address)
+                self.assertEqual(response.status_code, HTTPStatus.OK)
 
     def test_added_url_uses_correct_template(self):
-        """Страница /create/ использует шаблон post_create.html"""
-        response = self.authorized_client.get(self.url_names[0])
-        self.assertTemplateUsed(response, 'posts/post_create.html')
-
-    def test_task_list_url_exists_at_desired_edit(self):
-        """Страница /create/ доступна автору."""
-        response = self.authorized_client.get(self.url_names[1])
-        self.assertEqual(response.status_code, HTTPStatus.OK)
-
-    def test_added_url_uses_correct_template_edit(self):
-        """Страница /posts/1/edit/ использует шаблон post_create.html"""
-        response = self.authorized_client.get(self.url_names[1])
-        self.assertTemplateUsed(response, 'posts/post_create.html')
+        """URL-адрес использует соответствующий шаблон."""
+        for address in self.url_names[:2]:
+            with self.subTest(address=address):
+                response = self.authorized_client.get(address)
+                self.assertTemplateUsed(response, 'posts/post_create.html')
 
     def test_return_404(self):
         """Не существующая страница вернет ошибку 404"""

@@ -119,15 +119,18 @@ class PostFormTest(TestCase):
             'text': 'Отредактированный текст поста',
             'group': self.group.id
         }
+        post_count = Post.objects.count()
         response = self.authorized_client.post(
             reverse('posts:post_edit', args=[self.post.pk]),
             data=form_data,
             follow=True
         )
+
         self.assertRedirects(
             response,
             reverse('posts:post_detail', args=[self.post.id])
         )
+
         self.assertTrue(
             Post.objects.filter(
                 text=form_data['text'],
@@ -136,6 +139,7 @@ class PostFormTest(TestCase):
                 author=PostFormTest.user,
             ).exists()
         )
+        self.assertEqual(Post.objects.count(), post_count )
 
     def test_anonym_client_create_post(self):
         post_count = Post.objects.count()
