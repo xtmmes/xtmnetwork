@@ -84,39 +84,35 @@ class PostFormTest(TestCase):
             content=SMALL_GIF,
             content_type='image/gif'
         )
-        context = {
+        form_data = {
             'text': 'Текстовый текст',
             'group': PostFormTest.group.id,
             'image': upload,
         }
         response = self.authorized_client.post(
             reverse('posts:post_create'),
-            data=context,
+            data=form_data,
             follow=True
         )
         tested_post = Post.objects.first()
-        self.assertEqual(tested_post.group.id, context['group'])
-        self.assertEqual(tested_post.text, context['text'])
-        self.assertRedirects(response,
-                             reverse('posts:profile',
-                                     kwargs={
-                                         'username': PostFormTest.user}))
+        self.assertEqual(tested_post.group.id, form_data['group'])
+        self.assertEqual(tested_post.text, form_data['text'])
+        self.assertRedirects(
+            response,
+            reverse(
+                'posts:profile',
+                kwargs={'username': PostFormTest.user}
+            )
+        )
         self.assertEqual(Post.objects.count(), post_count + 1)
         self.assertEqual(response.status_code, HTTPStatus.OK)
-        self.assertEqual(Post.objects.latest('id').text, context['text'])
+        self.assertEqual(Post.objects.latest('id').text, form_data['text'])
         self.assertTrue(
             Post.objects.filter(
                 text='Текстовый текст',
                 image='posts/small_for_create.gif'
-            ).first()
+            ).exists()
         )
-        # self.assertTrue(
-        #     Group.objects.filter(
-        #         title='Тестовая группа',
-        #         slug='test-slug',
-        #         description='Тестовое описание',
-        #     ).first()
-        # )
 
     def test_post_edit(self):
         form_data = {
@@ -141,7 +137,7 @@ class PostFormTest(TestCase):
             ).exists()
         )
 
-    def test_anonim_client_create_post(self):
+    def test_anonym_client_create_post(self):
         post_count = Post.objects.count()
         response = self.client.post(
             reverse('posts:post_create'),
@@ -149,12 +145,14 @@ class PostFormTest(TestCase):
             follow=True
         )
         self.assertEqual(Post.objects.count(), post_count)
-        self.assertRedirects(response,
-                             reverse('users:login') + '?next=' + reverse(
-                                 'posts:post_create'))
+        self.assertRedirects(
+            response,
+            reverse('users:login') + '?next='
+            + reverse('posts:post_create')
+        )
         self.assertEqual(Post.objects.count(), post_count)
 
-    def test_anonim_edit_post(self):
+    def test_anonym_edit_post(self):
         context = {
             'text': 'Попытка изменить пост',
             'group': self.group.id,

@@ -3,13 +3,13 @@ from django.shortcuts import get_object_or_404, redirect, render
 
 from .forms import CommentForm, PostForm
 from .models import Comment, Follow, Group, Post, User
-from .utils import get_paginator
+from .utils import paginate_queryset
 
 
 def index(request):
     post_list = Post.objects.select_related('author', 'group')
     context = {
-        'page_obj': get_paginator(post_list, request),
+        'page_obj': paginate_queryset(post_list, request),
     }
     return render(request, 'posts/index.html', context)
 
@@ -19,7 +19,7 @@ def group_posts(request, slug):
     post_list = group.posts.select_related('author')
     context = {
         'group': group,
-        'page_obj': get_paginator(post_list, request),
+        'page_obj': paginate_queryset(post_list, request),
         'title': group.title,
     }
     return render(request, 'posts/group_list.html', context)
@@ -31,10 +31,12 @@ def profile(request, username):
     following = (
         request.user.is_authenticated
         and Follow.objects.filter(
-            user__username=request.user, author__username=username).exists())
+        user__username=request.user,
+        author__username=username).exists()
+    )
     context = {
         'author': author,
-        'page_obj': get_paginator(post_list, request),
+        'page_obj': paginate_queryset(post_list, request),
         'following': following,
     }
     return render(request, 'posts/profile.html', context)
@@ -98,9 +100,9 @@ def add_comment(request, post_id):
 
 @login_required
 def follow_index(request):
-    """Посты авторов,на которых подписан текущий пользователь, не более 10"""
-    posts = Post.objects.filter(author__following__user=request.user)
-    page_obj = get_paginator(posts, request)
+    """Посты авторов, на которых подписан текущий пользователь, не более 10"""
+    posts = Post.objects.select_related('author', 'group')
+    page_obj = paginate_queryset(posts, request)
     context = {
         'page_obj': page_obj,
     }
