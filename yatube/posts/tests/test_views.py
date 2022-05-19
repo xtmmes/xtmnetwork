@@ -175,17 +175,11 @@ class FollowTest(TestCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        cls.following_user = User.objects.create_user(
-            username='JackyChan'
-        )
-        cls.following_user_two = User.objects.create_user(
-            username='PeterParker'
-        )
-        cls.non_follower = User.objects.create_user(
-            username='Shwarz'
-        )
+        cls.user = User.objects.create_user(username='NoName')
+        cls.second_user = User.objects.create_user(username='FutureFollower')
+        cls.non_follower = User.objects.create_user(username='NonFollower')
         cls.post = Post.objects.create(
-            text='Пост проверки подписок',
+            text='Post to test following.',
             author=cls.user,
         )
 
@@ -193,13 +187,13 @@ class FollowTest(TestCase):
         self.authorized_client = Client()
         self.second_authorized_client = Client()
         self.non_follower_client = Client()
-        self.authorized_client.force_login(self.following_user)
-        self.second_authorized_client.force_login(self.following_user_two)
+        self.authorized_client.force_login(self.user)
+        self.second_authorized_client.force_login(self.second_user)
         self.non_follower_client.force_login(self.non_follower)
 
     def test_authorized_user_can_subscribe(self):
         """
-        Пользователь может подписаться на других
+        Авторизованный пользователь может подписываться на других
         пользователей.
         """
         subscribe_count = Follow.objects.count()
@@ -213,10 +207,7 @@ class FollowTest(TestCase):
         """
         Авторизованный пользователь может удалять свои подписки.
         """
-        Follow.objects.create(
-            user=self.second_user,
-            author=self.following_user
-        )
+        Follow.objects.create(user=self.second_user, author=self.user)
         subscribe_count = Follow.objects.count()
         self.second_authorized_client.get(reverse(
             'posts:profile_unfollow',
@@ -236,7 +227,8 @@ class FollowTest(TestCase):
 
     def test_post_appears_in_follower_list_and_not_in_user_list(self):
         """
-        Новый пост пользователя появляется в ленте тех, кто на него подписан
+        Новая запись пользователя появляется в ленте тех, кто на него подписан
+        и не появляется в ленте тех, кто не подписан.
         """
         posts_count = Post.objects.count()
         Follow.objects.create(user=self.second_user, author=self.user)
@@ -278,3 +270,4 @@ class FollowTest(TestCase):
         self.assertEqual(posts_count + 1, follower_new_post_count)
         self.assertEqual(posts_count - 1, non_follower_post_count)
         self.assertEqual(non_follower_post_count, non_follower_new_post_count)
+
