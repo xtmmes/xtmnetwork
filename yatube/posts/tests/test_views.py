@@ -168,3 +168,103 @@ class PaginatorTests(TestCase):
             with self.subTest(address=address):
                 response = self.user_client.get(address)
                 self.assertEqual(len(response.context['page_obj']), 3)
+
+
+class FollowTest(TestCase):
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.following_user = User.objects.create_user(username='JackyChan')
+        cls.following_user_two = User.objects.create_user(username='PeterParker')
+        cls.non_follower = User.objects.create_user(username='Shwarz')
+        cls.post = Post.objects.create(
+            text='Пост проверки подписок',
+            author=cls.user,
+        )
+
+    def setUp(self) -> None:
+        self.authorized_client = Client()
+        self.second_authorized_client = Client()
+        self.non_follower_client = Client()
+        self.authorized_client.force_login(self.following_user)
+        self.second_authorized_client.force_login(self.following_user_two)
+        self.non_follower_client.force_login(self.non_follower)
+
+    def test_authorized_user_can_subscribe(self):
+        """
+        Пользователь может подписаться на других
+        пользователей.
+        """
+        subscribe_count = Follow.objects.count()
+        self.second_authorized_client.get(reverse(
+            'posts:profile_follow',
+            kwargs={'username': f'{self.post.author}'}))
+        new_subscribe_count = Follow.objects.count()
+        self.assertEqual(subscribe_count + 1, new_subscribe_count)
+
+    def test_authorized_user_can_unsubscribe(self):
+        """
+        Авторизованный пользователь может удалять свои подписки.
+        """
+        Follow.objects.create(user=self.second_user, author=self.following_user)
+        subscribe_count = Follow.objects.count()
+        self.second_authorized_client.get(reverse(
+            'posts:profile_unfollow',
+            kwargs={'username': f'{self.post.author}'}))
+        new_subscribe_count = Follow.objects.count()
+        self.assertEqual(subscribe_count - 1, new_subscribe_count)
+
+    def test_author_cant_subscribe_itself(self):
+        """
+        Автор поста не может подписываться сам на себя.
+        """
+        subscribe_count = Follow.objects.count()
+        self.authorized_client.get(reverse(
+            'posts:profile_follow',
+            kwargs={'username': f'{self.post.author}'}))
+        self.assertEqual(subscribe_count, 0)
+
+    def test_post_appears_in_follower_list_and_not_in_user_list(self):
+        """
+        Новый пост пользователя появляется в ленте тех, кто на него подписан
+        """
+        posts_count = Post.objects.count()
+        Follow.objects.create(user=self.second_user, author=self.user)
+        response = self.second_authorized_client.get(
+            reverse(
+                'posts:follow_index'
+            )
+        )
+        follower_post_count = len(response.context['page_obj'].object_list)
+        response_non_follower = self.non_follower_client.get(
+            reverse(
+                'posts:follow_index'
+            )
+        )
+        non_follower_post_count = len(
+            response_non_follower.context['page_obj'].object_list)
+        self.authorized_client.post(
+            reverse('posts:post_create'),
+            data={'text': 'Author created new post.'},
+            follow=True
+        )
+        new_response = self.second_authorized_client.get(
+            reverse(
+                'posts:follow_index'
+            )
+        )
+        follower_new_post_count = len(
+            new_response.context['page_obj'].object_list
+        )
+        new_response_non_follower = self.non_follower_client.get(
+            reverse(
+                'posts:follow_index'
+            )
+        )
+        non_follower_new_post_count = len(
+            new_response_non_follower.context['page_obj'].object_list
+        )
+        self.assertEqual(posts_count, follower_post_count)
+        self.assertEqual(posts_count + 1, follower_new_post_count)
+        self.assertEqual(posts_count - 1, non_follower_post_count)
+        self.assertEqual(non_follower_post_count, non_follower_new_post_count)

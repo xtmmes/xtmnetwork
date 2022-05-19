@@ -31,8 +31,8 @@ def profile(request, username):
     following = (
         request.user.is_authenticated
         and Follow.objects.filter(
-        user__username=request.user,
-        author__username=username).exists()
+            user__username=request.user,
+            author__username=username).exists()
     )
     context = {
         'author': author,
@@ -101,7 +101,9 @@ def add_comment(request, post_id):
 @login_required
 def follow_index(request):
     """Посты авторов, на которых подписан текущий пользователь, не более 10"""
-    posts = Post.objects.select_related('author', 'group').filter(author__following__user=request.user)
+    posts = Post.objects.select_related(
+        'author',
+        'group').filter(author__following__user=request.user)
     page_obj = paginate_queryset(posts, request)
     context = {
         'page_obj': page_obj,
