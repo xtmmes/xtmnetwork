@@ -4,7 +4,7 @@ from django.test import Client, TestCase
 from django.urls import reverse
 
 from ..forms import PostForm
-from ..models import Group, Post, User
+from ..models import Group, Post, User, Follow
 
 
 class PostsViewsTests(TestCase):
@@ -136,50 +136,35 @@ class PaginatorTests(TestCase):
             slug='test-slug',
             description='Тестовая группа',
         )
-        for cls.post in range(settings.POSTS_COUNT + 3):
+        for cls.post in range(10 + 3):
             cls.post = Post.objects.create(
                 text='Тестовый текст',
                 author=cls.user,
                 group=cls.group
             )
 
-    def test_first_page_contains(self):
-        response = self.client.get(reverse('posts:index'))
-        self.assertEqual(len(response.context['page_obj']),
-                         settings.POSTS_COUNT)
+    def setUp(self):
+        self.user_client = Client()
+        self.user_client.force_login(self.user)
 
-    def test_group_first_page_contains(self):
-        response = self.client.get(reverse(
-            'posts:group_list', kwargs={
-                'slug': PaginatorTests.group.slug
-            })
+    def test_first_page_contains_ten_posts(self):
+        addresses = (
+            reverse('posts:index'),
+            reverse('posts:group_list', kwargs={'slug': self.group.slug}),
+            reverse('posts:profile', kwargs={'username': self.user})
         )
-        self.assertEqual(len(response.context['page_obj']),
-                         settings.POSTS_COUNT)
+        for address in addresses:
+            with self.subTest(address=address):
+                response = self.user_client.get(address)
+                self.assertEqual(len(response.context['page_obj']), 10)
 
-    def test_group_second_page_contains(self):
-        response = self.client.get(reverse(
-            'posts:group_list', kwargs={
-                'slug': PaginatorTests.group.slug
-            }) + '?page=2'
+    def test_second_page_contains_three_posts(self):
+        addresses = (
+            reverse('posts:index') + '?page=2',
+            reverse('posts:group_list', kwargs={'slug': self.group.slug}) + '?page=2',
+            reverse('posts:profile', kwargs={'username': self.user}) + '?page=2'
         )
-        self.assertEqual(len(
-            response.context['page_obj']), 3)
-
-    def test_profile_first_page_contains(self):
-        response = self.client.get(reverse(
-            'posts:profile', kwargs={
-                'username': PaginatorTests.user.username,
-            })
-        )
-        self.assertEqual(len(response.context['page_obj']),
-                         settings.POSTS_COUNT)
-
-    def test_profile_second_page_contains(self):
-        response = self.client.get(reverse(
-            'posts:profile', kwargs={
-                'username': PaginatorTests.user.username,
-            }) + '?page=2'
-        )
-        self.assertEqual(len(
-            response.context['page_obj']), 3)
+        for address in addresses:
+            with self.subTest(address=address):
+                response = self.user_client.get(address)
+                self.assertEqual(len(response.context['page_obj']), 3)
