@@ -139,7 +139,7 @@ class PostFormTest(TestCase):
                 author=PostFormTest.user,
             ).exists()
         )
-        self.assertEqual(Post.objects.count(), post_count )
+        self.assertEqual(Post.objects.count(), post_count)
 
     def test_anonym_client_create_post(self):
         post_count = Post.objects.count()

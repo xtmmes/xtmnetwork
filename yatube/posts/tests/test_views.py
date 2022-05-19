@@ -1,5 +1,4 @@
 from django import forms
-from django.conf import settings
 from django.test import Client, TestCase
 from django.urls import reverse
 
@@ -161,8 +160,10 @@ class PaginatorTests(TestCase):
     def test_second_page_contains_three_posts(self):
         addresses = (
             reverse('posts:index') + '?page=2',
-            reverse('posts:group_list', kwargs={'slug': self.group.slug}) + '?page=2',
-            reverse('posts:profile', kwargs={'username': self.user}) + '?page=2'
+            reverse('posts:group_list',
+                    kwargs={'slug': self.group.slug}) + '?page=2',
+            reverse('posts:profile',
+                    kwargs={'username': self.user}) + '?page=2'
         )
         for address in addresses:
             with self.subTest(address=address):
@@ -174,9 +175,15 @@ class FollowTest(TestCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        cls.following_user = User.objects.create_user(username='JackyChan')
-        cls.following_user_two = User.objects.create_user(username='PeterParker')
-        cls.non_follower = User.objects.create_user(username='Shwarz')
+        cls.following_user = User.objects.create_user(
+            username='JackyChan'
+        )
+        cls.following_user_two = User.objects.create_user(
+            username='PeterParker'
+        )
+        cls.non_follower = User.objects.create_user(
+            username='Shwarz'
+        )
         cls.post = Post.objects.create(
             text='Пост проверки подписок',
             author=cls.user,
