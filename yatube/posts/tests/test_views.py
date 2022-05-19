@@ -213,7 +213,10 @@ class FollowTest(TestCase):
         """
         Авторизованный пользователь может удалять свои подписки.
         """
-        Follow.objects.create(user=self.second_user, author=self.following_user)
+        Follow.objects.create(
+            user=self.second_user,
+            author=self.following_user
+        )
         subscribe_count = Follow.objects.count()
         self.second_authorized_client.get(reverse(
             'posts:profile_unfollow',
