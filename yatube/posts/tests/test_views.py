@@ -234,7 +234,7 @@ class FollowTest(TestCase):
             kwargs={'username': f'{self.post.author}'}))
         self.assertEqual(subscribe_count, 0)
 
-    def test_post_appears_in_follower_list_and_not_in_user_list(self):
+    def test_post_appears_in_follower_list(self):
         """
         Новая запись пользователя появляется в ленте тех, кто на него подписан
         и не появляется в ленте тех, кто не подписан.
@@ -267,15 +267,27 @@ class FollowTest(TestCase):
         follower_new_post_count = len(
             new_response.context['page_obj'].object_list
         )
+
+        self.assertEqual(posts_count, follower_post_count)
+        self.assertEqual(posts_count + 1, follower_new_post_count)
+        self.assertEqual(posts_count - 1, non_follower_post_count)
+
+    def test_post_appears_not_in_user_list(self):
+        response_non_follower = self.non_follower_client.get(
+            reverse(
+                'posts:follow_index'
+            )
+        )
         new_response_non_follower = self.non_follower_client.get(
             reverse(
                 'posts:follow_index'
             )
         )
+
+        non_follower_post_count = len(
+            response_non_follower.context['page_obj'].object_list)
+
         non_follower_new_post_count = len(
             new_response_non_follower.context['page_obj'].object_list
         )
-        self.assertEqual(posts_count, follower_post_count)
-        self.assertEqual(posts_count + 1, follower_new_post_count)
-        self.assertEqual(posts_count - 1, non_follower_post_count)
         self.assertEqual(non_follower_post_count, non_follower_new_post_count)
