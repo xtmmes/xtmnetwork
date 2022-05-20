@@ -7,6 +7,8 @@ User = get_user_model()
 
 
 class PostModelTest(TestCase):
+    user = None
+
     @classmethod
     def setUpClass(cls):
         super().setUpClass()

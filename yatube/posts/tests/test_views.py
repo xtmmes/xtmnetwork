@@ -7,6 +7,10 @@ from ..models import Group, Post, User, Follow
 
 
 class PostsViewsTests(TestCase):
+    group = None
+    author = None
+    post = None
+
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
@@ -21,19 +25,19 @@ class PostsViewsTests(TestCase):
             author=cls.author,
             group=cls.group
         )
-        cls.group_check = Group.objects.create(
+        cls.group_without_posts = Group.objects.create(
             title='Views Test',
             slug='views_slug',
             description='Views check description'
         )
-        cls.template_pages_names = {
-            '/': 'posts/index.html',
-            '/group/views_group/': 'posts/group_list.html',
-            f'/posts/{cls.post.id}/': 'posts/post_detail.html',
-            '/create/': 'posts/post_create.html',
-            f'/posts/{cls.post.id}/edit/': 'posts/post_create.html',
-            '/profile/views_user/': 'posts/profile.html',
-        }
+
+        cls.template_pages_names = (
+            reverse('posts:index'),
+            reverse('posts:group_list', kwargs={'slug': cls.group.slug}),
+            reverse('posts:post_detail', args=[cls.post.id]),
+            reverse('posts:post_create'),
+            reverse('posts:profile', args=[cls.author.username]),
+        )
 
     def setUp(self):
         self.user = User.objects.create_user(username='views_user')
@@ -119,13 +123,16 @@ class PostsViewsTests(TestCase):
     def test_post_not_found(self):
         """Проверка отсутствия записи в лишней группе"""
         response = self.authorized_client.get(
-            reverse('posts:group_list', args=[self.group_check.slug])
+            reverse('posts:group_list', args=[self.group_without_posts.slug])
         )
         context = response.context['page_obj'].object_list
         self.assertNotIn(self.post, context)
 
 
 class PaginatorTests(TestCase):
+    group = None
+    user = None
+
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
@@ -172,6 +179,8 @@ class PaginatorTests(TestCase):
 
 
 class FollowTest(TestCase):
+    user = None
+
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
