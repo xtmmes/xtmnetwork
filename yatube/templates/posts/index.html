@@ -4,10 +4,12 @@
 
 {% block title %}
   Последние обновления на сайте:
+
 {% endblock title %}
 
 {% block content %}
   <h1>Последние обновления на сайте</h1>
+    {% include 'includes/switcher.html' %}
   {% cache 20 index_page with page_obj %}
     {% for post in page_obj %}
      {% include 'includes/post_card.html' %}

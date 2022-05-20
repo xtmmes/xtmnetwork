@@ -1,20 +1,42 @@
 {% extends "base.html" %}
+{% load static %}
 {% block title %}Технологии{% endblock %}
 {% block content %}
-<div class="row">
-  <h1>Вот что я умею</h1>
-  <aside class="col-12 col-md-3">
-    <ul class="list-group list-group-flush">
-      <li class="list-group-item">
-        Python
-      </li>
-      <li class="list-group-item">
-        Django
-      </li>
-    </ul>
-  </aside>
-  <article class="col-12 col-md-9">
-    <p>Текст страницы "Технологии"</p>
-  </article>
-</div>
-{% endblock %} 
+          <div class="container" style="background-color: darkslategrey; color:white ">
+            <div class="row">
+                <h3>В Данном проекте применены технологии:</h3>
+            <div class="col-sm-6">
+
+                <br>
+                <ul>
+                    <li>Python 3.7</li>
+                    <li>Django==2.2.16</li>
+                     <li>mixer==7.1.2</li>
+                    <li>pytest==6.2.4</li>
+                    <li>pytest-django==4.4.0</li>
+                    <li>pytest-pythonpath==0.7.3</li>
+                    <li>requests==2.26.0</li>
+                    <li>six==1.16.0</li>
+                    <li>sorl-thumbnail==12.7.0</li>
+                    <li>Faker==12.0.1</li>
+                    <li>DJANGO ORM SQLLite</li>
+                    <li>BootStrap 5</li>
+                </ul>
+                </div>
+               <div class="col-sm-6">
+                <img src="{% static 'img/python2.png' %}" class="card-img-top" alt="...">
+               </div>
+            </div>
+          </div>
+{% endblock %}
+
+Django==2.2.16
+mixer==7.1.2
+Pillow==8.3.1
+pytest==6.2.4
+pytest-django==4.4.0
+pytest-pythonpath==0.7.3
+requests==2.26.0
+six==1.16.0
+sorl-thumbnail==12.7.0
+Faker==12.0.1
