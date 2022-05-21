@@ -6,7 +6,7 @@
       <a href="{% url 'posts:profile' post.author %}">
         {{ post.author.get_full_name }}
       </a>
-       Дата публикации: {{ post.pub_date|date:"d E Y" }}
+      <p>Дата публикации: {{ post.pub_date|date:"d E Y" }}</p>
     </span>
   </div>
   <div class="card-body">

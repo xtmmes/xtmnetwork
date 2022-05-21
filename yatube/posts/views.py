@@ -8,8 +8,10 @@ from .utils import paginate_queryset
 
 def index(request):
     post_list = Post.objects.select_related('author', 'group')
+    group_list = Group.objects.all()
     context = {
         'page_obj': paginate_queryset(post_list, request),
+        'group_obj': group_list
     }
     return render(request, 'posts/index.html', context)
 
